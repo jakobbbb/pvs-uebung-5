@@ -2,7 +2,10 @@
 
 ## dependencies
 
-* ubuntu+nvidia: `ocl-icd-opencl-dev nvidia-libopencl1-384`
+* ubuntu: `ocl-icd-opencl-dev ocl-icd-libopencl1 opencl-headers`
+** nvidia: `nvidia-libopencl1-384`
+** intel: `beignet-opencl-icd`
+** additionally, `clinfo` might be useful
 
 * arch: `ocl-icd opencl-headers`, and a
 [runtime](https://wiki.archlinux.org/index.php/GPGPU#OpenCL_Runtime),
