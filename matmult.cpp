@@ -51,7 +51,7 @@ int main(void) {
     float** C = alloc_mat(MAT_SIZE, MAT_SIZE);
     float** C_serial = alloc_mat(MAT_SIZE, MAT_SIZE);
 
-    size_t global[2] = { MAT_SIZE, MAT_SIZE };
+    size_t global[1] = { MAT_SIZE };
 
     double t_start_par = omp_get_wtime();
     /* 1) */
@@ -141,7 +141,7 @@ int main(void) {
 
     /* 3)  */
 
-    clEnqueueNDRangeKernel(command_queue, kernel, 2, NULL, global, NULL, 0,
+    clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, global, NULL, 0,
                            NULL, NULL);
 
     clFinish(command_queue);
