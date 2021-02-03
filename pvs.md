@@ -112,11 +112,14 @@ That's 45.84 times faster!
 
 By swapping the loops we're speeding up access to `A`: The matrix `A`
 (which is a large contiguous array in memory) is accessed at index
-`i * DIM + k`.  Swapping the loops changes the loop variables to `i` in
+`i*DIM+k`.  Swapping the loops changes the loop variables to `i` in
 the outer loop and `k` in the inner loop.  This means that with each
 iteration of the inner loop, were always going to the very next element
 of `A`.  That is, `A` is read sequentially, which allows the computer to
 make more efficient use of its cache.
+
+The previous iteration of the kernel jumps around more while reading
+`A`, causing more cache misses which costs time.
 
 # Task 3: Memory Optimization
 
