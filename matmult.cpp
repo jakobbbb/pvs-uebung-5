@@ -46,8 +46,8 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "       float tmp = .0f;"
                            "       for (k = 0; k < DIM; ++k) {"
                            "            tmp += A[i*DIM+k] * B[k*DIM+j];"
-                           "            C[i*DIM+j] = tmp;"
                            "       }"
+                           "       C[i*DIM+j] = tmp;"
                            "   }"
                            "}";
 
