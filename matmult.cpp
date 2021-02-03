@@ -272,8 +272,5 @@ int main(void) {
     printf("Parallel took %.5f seconds.\n", t_parallel);
     printf("That's %.2f times faster!\n", t_serial / t_parallel);
 
-    printf("Our results on a (3570K, GTX660, 2000x2000 matrices) were:\n");
-    printf("Serial: 58.36 seconds, Parallel: 0.689 seconds, Speedup : 84.69\n");
-
     return 0;
 }
