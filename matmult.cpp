@@ -11,8 +11,12 @@
 
 #define DATA_SIZE MAT_SIZE* MAT_SIZE
 #define MEM_SIZE DATA_SIZE * sizeof(float)
-/* 
 
+#ifndef COMPILE_TASK
+#define COMPILE_TASK 0
+#endif
+
+#if COMPILE_TASK == 0
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "\n"
                            "__kernel void mult(__global float *A,"
@@ -26,11 +30,10 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "       }"
                            "   }"
                            "}";
- */
 
+#elif COMPILE_TASK == 1
 //------------------------------------------------------------------------
 // task 1: reduction of field access
- 
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "\n"
                            "__kernel void mult(__global float *A,"
@@ -47,13 +50,12 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "       }"
                            "   }"
                            "}";
- 
 
 
 
+#elif COMPILE_TASK == 2
 //------------------------------------------------------------------------
 // task 2: Loop swapping
-/*
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "\n"
                            "__kernel void mult(__global float *A,"
@@ -67,11 +69,13 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "         tmp += A[i*DIM+k] * B[k*DIM+j];"
                            "   C[i*DIM+j] = tmp;"
                            "}";
-
- */
+#endif
 
 /** **/
 int main(void) {
+
+    printf("Running task %d\n", COMPILE_TASK);
+
     cl_int err;
     cl_platform_id* platforms = NULL;
     char platform_name[1024];
@@ -169,7 +173,6 @@ int main(void) {
     buf_A = clCreateBuffer(context, CL_MEM_READ_ONLY, MEM_SIZE, NULL, &err);
     buf_B = clCreateBuffer(context, CL_MEM_READ_ONLY, MEM_SIZE, NULL, &err);
     output = clCreateBuffer(context, CL_MEM_WRITE_ONLY, MEM_SIZE, NULL, &err);
-    printf("MEM_SIZE is %d", MEM_SIZE);
 
     clEnqueueWriteBuffer(command_queue, buf_A, CL_TRUE, 0, MEM_SIZE, A[0], 0,
                          NULL, NULL);
