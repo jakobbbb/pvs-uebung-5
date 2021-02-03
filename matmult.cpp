@@ -13,7 +13,7 @@
 #define MEM_SIZE DATA_SIZE * sizeof(float)
 
 #ifndef COMPILE_TASK
-#define COMPILE_TASK 0
+#define COMPILE_TASK 1
 #endif
 
 #if COMPILE_TASK == 0
