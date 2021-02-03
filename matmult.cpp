@@ -29,18 +29,17 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
  */
 
 //------------------------------------------------------------------------
-// task 1: reduction of field access
-/*  
+// task 1: Reduction of field access
+
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "\n"
                            "__kernel void mult(__global float *A,"
                            "                   __global float *B,"
                            "                   __global float *C) {"
-                           "   float tmp;"
                            "   int i, j, k;"
                            "   i = get_global_id(0);"
                            "   for (j = 0; j < DIM; ++j) {"
-                           "       tmp = .0f;"
+                           "       float tmp = .0f;"
                            "       for (k = 0; k < DIM; ++k) {"
                            "            tmp += A[i*DIM+k] * B[k*DIM+j];"
                            "            C[i*DIM+j] = tmp;"
@@ -48,18 +47,18 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "   }"
                            "}";
  
- */
+ 
 
 
 //------------------------------------------------------------------------
-// task 2: Loop swapping
+// task 2: Loop swapping TODO
 /* 
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "\n"
                            "__kernel void mult(__global float *A,"
                            "                   __global float *B,"
                            "                   __global float *C) {"
-                           "   float tmp = 0.0;"
+                           "   float tmp = .0f;"
                            "   int i, j, k;"
                            "   j = get_global_id(0);"
                            "   i = get_gloabl_id(1);"
@@ -73,7 +72,7 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
 
 //------------------------------------------------------------------------
 // task 3: Memory optimization
-
+/* 
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "\n"
                            "__kernel void mult(__global float *A,"
@@ -81,19 +80,43 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "                   __global float *C) {"
                            "   int i, j, k;"
                            "   i = get_global_id(0);"
-                           "   float P[DIM];"
+                           "   float A1[DIM];"
                            "   for (k = 0; k < DIM; ++k) {"
-                           "       P[k] = A[i*DIM+k];"
+                           "       A1[k] = A[i*DIM+k];"
                            "   }"
                            "   for (j = 0; j < DIM; ++j) {"
                            "       float tmp = .0f;"
                            "       for (k = 0; k < DIM; ++k) {"
-                           "           tmp += P[k] * B[k*DIM+j];"
+                           "           tmp += A1[k] * B[k*DIM+j];"
                            "       }"
                            "       C[i*DIM+j] = tmp;"
                            "   }"
                            "}";
- 
+  */
+
+ //------------------------------------------------------------------------
+// task 4: Distributed storage optimization in workgroups   COPIED from task 3 TODO
+/* 
+const char* KernelSource = "#define DIM " MAT_SIZE_STR
+                           "\n"
+                           "__kernel void mult(__global float *A,"
+                           "                   __global float *B,"
+                           "                   __global float *C) {"
+                           "   int i, j, k;"
+                           "   i = get_global_id(0);"
+                           "   float A1[DIM];"
+                           "   for (k = 0; k < DIM; ++k) {"
+                           "       A1[k] = A[i*DIM+k];"
+                           "   }"
+                           "   for (j = 0; j < DIM; ++j) {"
+                           "       float tmp = .0f;"
+                           "       for (k = 0; k < DIM; ++k) {"
+                           "           tmp += A1[k] * B[k*DIM+j];"
+                           "       }"
+                           "       C[i*DIM+j] = tmp;"
+                           "   }"
+                           "}";
+  */
 
 /** **/
 int main(void) {
