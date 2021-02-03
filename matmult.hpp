@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAT_SIZE 1000
-#define MAT_SIZE_STR "1000"
+#define MAT_SIZE 200
+#define MAT_SIZE_STR "200"
 #define EPSILON 0.0001f
 
 // ---------------------------------------------------------------------------
@@ -60,6 +60,9 @@ bool mat_equal(float** mat1, float** mat2, int m, int n) {
     for (int i = 0; i < m; ++i) {
         for (int j = 0; j < n; ++j) {
             if (abs(mat1[i][j] - mat2[i][j]) > EPSILON) {
+                printf("Matrices differ at [%d][%d], where %.2f != %.2f\n",
+                        i, j, mat1[i][j], mat2[i][j]
+                        );
                 return false;
             }
         }

@@ -20,9 +20,13 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "                   __global float *C) {"
                            "   int i, j, k;"
                            "   i = get_global_id(0);"
-                           "   for (j = 0; j < DIM; ++j)"
-                           "       for (k = 0; k < DIM; ++k)"
-                           "           C[i*DIM+j] += A[i*DIM+k] * B[k*DIM+j];"
+                           "   for (j = 0; j < DIM; ++j) {"
+                           "       float tmp = 0.f;"
+                           "       for (k = 0; k < DIM; ++k) {"
+                           "           tmp += A[i*DIM+k] * B[k*DIM+j];"
+                           "       }"
+                           "       C[i*DIM+j] = tmp;"
+                           "   }"
                            "}";
 
 /** **/
@@ -47,7 +51,7 @@ int main(void) {
     float** C = alloc_mat(MAT_SIZE, MAT_SIZE);
     float** C_serial = alloc_mat(MAT_SIZE, MAT_SIZE);
 
-    size_t global[1] = {DATA_SIZE};
+    size_t global[2] = { MAT_SIZE, MAT_SIZE };
 
     double t_start_par = omp_get_wtime();
     /* 1) */
@@ -121,13 +125,14 @@ int main(void) {
 
     /* 2) */
 
-    buf_A = clCreateBuffer(context, CL_MEM_WRITE_ONLY, MEM_SIZE, NULL, &err);
-    buf_B = clCreateBuffer(context, CL_MEM_WRITE_ONLY, MEM_SIZE, NULL, &err);
+    buf_A = clCreateBuffer(context, CL_MEM_READ_ONLY, MEM_SIZE, NULL, &err);
+    buf_B = clCreateBuffer(context, CL_MEM_READ_ONLY, MEM_SIZE, NULL, &err);
     output = clCreateBuffer(context, CL_MEM_WRITE_ONLY, MEM_SIZE, NULL, &err);
+    printf("MEM_SIZE is %d", MEM_SIZE);
 
-    clEnqueueWriteBuffer(command_queue, buf_A, CL_TRUE, 0, MEM_SIZE, *A, 0,
+    clEnqueueWriteBuffer(command_queue, buf_A, CL_TRUE, 0, MEM_SIZE, A[0], 0,
                          NULL, NULL);
-    clEnqueueWriteBuffer(command_queue, buf_B, CL_TRUE, 0, MEM_SIZE, *B, 0,
+    clEnqueueWriteBuffer(command_queue, buf_B, CL_TRUE, 0, MEM_SIZE, B[0], 0,
                          NULL, NULL);
 
     clSetKernelArg(kernel, 0, sizeof(cl_mem), &buf_A);
@@ -136,12 +141,12 @@ int main(void) {
 
     /* 3)  */
 
-    clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, global, NULL, 0,
+    clEnqueueNDRangeKernel(command_queue, kernel, 2, NULL, global, NULL, 0,
                            NULL, NULL);
 
     clFinish(command_queue);
 
-    clEnqueueReadBuffer(command_queue, output, CL_TRUE, 0, MEM_SIZE, *C, 0,
+    clEnqueueReadBuffer(command_queue, output, CL_TRUE, 0, MEM_SIZE, C[0], 0,
                         NULL, NULL);
 
     /* 4) */
