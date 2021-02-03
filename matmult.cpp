@@ -221,7 +221,6 @@ int main(void) {
     buf_A = clCreateBuffer(context, CL_MEM_READ_ONLY, MEM_SIZE, NULL, &err);
     buf_B = clCreateBuffer(context, CL_MEM_READ_ONLY, MEM_SIZE, NULL, &err);
     output = clCreateBuffer(context, CL_MEM_WRITE_ONLY, MEM_SIZE, NULL, &err);
-    printf("MEM_SIZE is %d", MEM_SIZE);
 
     clEnqueueWriteBuffer(command_queue, buf_A, CL_TRUE, 0, MEM_SIZE, A[0], 0,
                          NULL, NULL);
