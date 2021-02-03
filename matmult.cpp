@@ -17,6 +17,8 @@
 #endif
 
 #if COMPILE_TASK == 0
+
+const char* KernelName = "Initial Version";
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "\n"
                            "__kernel void mult(__global float *A,"
@@ -35,6 +37,7 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
 //------------------------------------------------------------------------
 // task 1: Reduction of field access
 
+const char* KernelName = "Reduction of field access";
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "\n"
                            "__kernel void mult(__global float *A,"
@@ -56,6 +59,7 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
 //------------------------------------------------------------------------
 // task 2: Loop swapping TODO
 
+const char* KernelName = "Loop swapping";
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "\n"
                            "__kernel void mult(__global float *A,"
@@ -76,6 +80,7 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
 //------------------------------------------------------------------------
 // task 3: Memory optimization
 
+const char* KernelName = "Memory optimization";
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "\n"
                            "__kernel void mult(__global float *A,"
@@ -101,6 +106,7 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
  //------------------------------------------------------------------------
 // task 4: Distributed storage optimization in workgroups   COPIED from task 3 TODO
 
+const char* KernelName = "Distributed storage optimization in workgroups";
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "\n"
                            "__kernel void mult(__global float *A,"
@@ -124,6 +130,8 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
 
 /** **/
 int main(void) {
+    printf("Running with kernel #%d (%s).\n", COMPILE_TASK, KernelName);
+
     cl_int err;
     cl_platform_id* platforms = NULL;
     char platform_name[1024];
