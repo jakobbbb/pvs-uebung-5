@@ -6,6 +6,8 @@ ASSIGNMENT_GROUP=B
 ASSIGNMENT_NUMBER=05
 ASSIGNMENT_TITLE=pvs$(ASSIGNMENT_NUMBER)-grp$(ASSIGNMENT_GROUP)
 
+COMPILE_TASK=0
+
 .PHONY: build
 build: matmult
 
@@ -15,7 +17,7 @@ debug: build
 
 .PHONY: matmult
 matmult:
-	g++ $(GCC_FLAGS) matmult.cpp -o matmult $(GCC_L)
+	g++ $(GCC_FLAGS) matmult.cpp -o matmult $(GCC_L) -DCOMPILE_TASK=$(COMPILE_TASK)
 
 .PHONY: test
 test: build

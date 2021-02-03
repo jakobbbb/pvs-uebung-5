@@ -11,8 +11,12 @@
 
 #define DATA_SIZE MAT_SIZE* MAT_SIZE
 #define MEM_SIZE DATA_SIZE * sizeof(float)
-/* 
 
+#ifndef COMPILE_TASK
+#define COMPILE_TASK 0
+#endif
+
+#if COMPILE_TASK == 0
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "\n"
                            "__kernel void mult(__global float *A,"
@@ -26,8 +30,8 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "       }"
                            "   }"
                            "}";
- */
 
+#elif COMPILE_TASK == 1
 //------------------------------------------------------------------------
 // task 1: Reduction of field access
 
@@ -46,13 +50,12 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "       }"
                            "   }"
                            "}";
- 
- 
 
 
+#elif COMPILE_TASK == 2
 //------------------------------------------------------------------------
 // task 2: Loop swapping TODO
-/* 
+
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "\n"
                            "__kernel void mult(__global float *A,"
@@ -67,12 +70,12 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "   }"
                            "   C[i*DIM+j] = tmp;"
                            "}";
- */
 
 
+#elif COMPILE_TASK == 3
 //------------------------------------------------------------------------
 // task 3: Memory optimization
-/* 
+
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "\n"
                            "__kernel void mult(__global float *A,"
@@ -92,11 +95,12 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "       C[i*DIM+j] = tmp;"
                            "   }"
                            "}";
-  */
 
+
+#elif COMPILE_TASK == 4
  //------------------------------------------------------------------------
 // task 4: Distributed storage optimization in workgroups   COPIED from task 3 TODO
-/* 
+
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "\n"
                            "__kernel void mult(__global float *A,"
@@ -116,7 +120,7 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "       C[i*DIM+j] = tmp;"
                            "   }"
                            "}";
-  */
+#endif
 
 /** **/
 int main(void) {
