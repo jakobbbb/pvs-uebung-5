@@ -12,11 +12,11 @@
 #define DATA_SIZE MAT_SIZE* MAT_SIZE
 #define MEM_SIZE DATA_SIZE * sizeof(float)
 
-#ifndef COMPILE_TASK
-#define COMPILE_TASK 1
+#ifndef KERNEL
+#define KERNEL 1
 #endif
 
-#if COMPILE_TASK == 0
+#if KERNEL == 0
 
 const char* KernelName = "Initial Version";
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
@@ -33,7 +33,7 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "   }"
                            "}";
 
-#elif COMPILE_TASK == 1
+#elif KERNEL == 1
 //------------------------------------------------------------------------
 // task 1: Reduction of field access
 
@@ -55,7 +55,7 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "}";
 
 
-#elif COMPILE_TASK == 2
+#elif KERNEL == 2
 //------------------------------------------------------------------------
 // task 2: Loop swapping
 
@@ -77,7 +77,7 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "}";
 
 
-#elif COMPILE_TASK == 3
+#elif KERNEL == 3
 //------------------------------------------------------------------------
 // task 3: Memory optimization
 
@@ -103,7 +103,7 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "}";
 
 
-#elif COMPILE_TASK == 4
+#elif KERNEL == 4
  //------------------------------------------------------------------------
 // task 4: Distributed storage optimization in workgroups   COPIED from task 3 TODO
 
@@ -131,7 +131,7 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
 
 /** **/
 int main(void) {
-    printf("Running with kernel #%d (%s).\n", COMPILE_TASK, KernelName);
+    printf("Running with kernel #%d (%s).\n", KERNEL, KernelName);
 
     cl_int err;
     cl_platform_id* platforms = NULL;

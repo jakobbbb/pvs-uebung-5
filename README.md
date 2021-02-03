@@ -14,8 +14,8 @@ e.g. `opencl-nvidia`
 ## running
 
 A Makefile has been provided.  To select an iteration of the kernel,
-pass the `COMPILE_TASK` option.  E.g., to run and test the first
+pass the `KERNEL` option.  E.g., to run and test the first
 optimization of the kernel run:
 ```
-make test COMPILE_TASK=1
+make test KERNEL=1
 ```
