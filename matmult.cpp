@@ -57,7 +57,7 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
 
 #elif COMPILE_TASK == 2
 //------------------------------------------------------------------------
-// task 2: Loop swapping TODO
+// task 2: Loop swapping
 
 const char* KernelName = "Loop swapping";
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
@@ -65,14 +65,15 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "__kernel void mult(__global float *A,"
                            "                   __global float *B,"
                            "                   __global float *C) {"
-                           "   float tmp = .0f;"
                            "   int i, j, k;"
                            "   j = get_global_id(0);"
-                           "   i = get_gloabl_id(1);"
-                           "   for (k = 0; k < DIM; ++k) {"
-                           "       tmp += A[i*DIM+k] * B[k*DIM+j];"
+                           "   for (i = 0; i < DIM; ++i) {"
+                           "       float tmp = .0f;"
+                           "       for (k = 0; k < DIM; ++k) {"
+                           "            tmp += A[i*DIM+k] * B[k*DIM+j];"
+                           "       }"
+                           "       C[i*DIM+j] = tmp;"
                            "   }"
-                           "   C[i*DIM+j] = tmp;"
                            "}";
 
 
