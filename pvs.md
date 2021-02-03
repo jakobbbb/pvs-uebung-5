@@ -43,7 +43,7 @@ matmult: matmult.cpp:267: int main(): Assertion `mat_equal(C, C_serial, MAT_SIZE
 make: *** [Makefile:24: test] Aborted (core dumped)
 ```
 
-Turns out that this kernel does not product correct results.  This may
+Turns out that this kernel does not produce correct results.  This may
 be caused by a race condition where write accesses to `C` collide
 because they are happening too quickly.
 
