@@ -21,14 +21,6 @@ where `id` ranges from `0` to `4`:
 
 # Initial Kernel (0)
 
-```
-[user@computer pvs-uebung-5]$ make test KERNEL=0
-Running with kernel #0 (Initial Version).
-Matrices differ at [0][0], where 61788.00 != 20596.00
-matmult: matmult.cpp:267: int main(): Assertion `mat_equal(C, C_serial, MAT_SIZE, MAT_SIZE)' failed.
-make: *** [Makefile:24: test] Aborted (core dumped)
-```
-
 ```cpp
 __kernel void mult(__global float *A,
                    __global float *B,
@@ -43,19 +35,20 @@ __kernel void mult(__global float *A,
 }
 ```
 
-TODO:  Discuss.
+```
+[user@computer pvs-uebung-5]$ make test KERNEL=0
+Running with kernel #0 (Initial Version).
+Matrices differ at [0][0], where 61788.00 != 20596.00
+matmult: matmult.cpp:267: int main(): Assertion `mat_equal(C, C_serial, MAT_SIZE, MAT_SIZE)' failed.
+make: *** [Makefile:24: test] Aborted (core dumped)
+```
+
+Turns out that this kernel does not product correct results.  This may
+be caused by a race condition where write accesses to `C` collide
+because they are happening too quickly.
 
 
 # Task 1: Reduction of Field Access
-
-```
-[user@computer pvs-uebung-5]$ make test KERNEL=1
-Running with kernel #1 (Reduction of field access).
-Results are correct.
-Serial took 8.95086 seconds.
-Parallel took 0.72261 seconds.
-That's 12.39 times faster!
-```
 
 ```cpp
 __kernel void mult(__global float *A,
@@ -73,19 +66,23 @@ __kernel void mult(__global float *A,
 }
 ```
 
-TODO:  Discuss.
+```
+[user@computer pvs-uebung-5]$ make test KERNEL=1
+Running with kernel #1 (Reduction of field access).
+Results are correct.
+Serial took 8.95086 seconds.
+Parallel took 0.72261 seconds.
+That's 12.39 times faster!
+```
 
+By using a temporary variable to accumulate the result for `C[i*DIM+j]`,
+we're avoiding the race condition of kernel `0`.
+
+Furthermore, writing to a local variable like `tmp` is much faster than
+writing to a variable in global memory, like `C`.
 
 # Task 2: Loop Swapping
 
-```
-[user@computer pvs-uebung-5]$ make test KERNEL=2
-Running with kernel #2 (Loop swapping).
-Results are correct.
-Serial took 8.65357 seconds.
-Parallel took 0.18878 seconds.
-That's 45.84 times faster!
-```
 
 
 ```cpp
@@ -104,19 +101,24 @@ __kernel void mult(__global float *A,
 }
 ```
 
-TODO:  Discuss.
+```
+[user@computer pvs-uebung-5]$ make test KERNEL=2
+Running with kernel #2 (Loop swapping).
+Results are correct.
+Serial took 8.65357 seconds.
+Parallel took 0.18878 seconds.
+That's 45.84 times faster!
+```
 
+By swapping the loops we're speeding up access to `A`: The matrix `A`
+(which is a large contiguous array in memory) is accessed at index
+`i * DIM + k`.  Swapping the loops changes the loop variables to `i` in
+the outer loop and `k` in the inner loop.  This means that with each
+iteration of the inner loop, were always going to the very next element
+of `A`.  That is, `A` is read sequentially, which allows the computer to
+make more efficient use of its cache.
 
 # Task 3: Memory Optimization
-
-```
-[user@computer pvs-uebung-5]$ make test KERNEL=3
-Running with kernel #3 (Memory optimization).
-Results are correct.
-Serial took 9.02747 seconds.
-Parallel took 0.16888 seconds.
-That's 53.46 times faster!
-```
 
 ```cpp
 __kernel void mult(__global float *A,
@@ -136,6 +138,15 @@ __kernel void mult(__global float *A,
        C[i*DIM+j] = tmp;
    }
 }
+```
+
+```
+[user@computer pvs-uebung-5]$ make test KERNEL=3
+Running with kernel #3 (Memory optimization).
+Results are correct.
+Serial took 9.02747 seconds.
+Parallel took 0.16888 seconds.
+That's 53.46 times faster!
 ```
 
 TODO:  Discuss.
