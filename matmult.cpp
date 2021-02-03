@@ -11,8 +11,8 @@
 
 #define DATA_SIZE MAT_SIZE* MAT_SIZE
 #define MEM_SIZE DATA_SIZE * sizeof(float)
+/* 
 
-/** **/
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "\n"
                            "__kernel void mult(__global float *A,"
@@ -26,6 +26,49 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "       }"
                            "   }"
                            "}";
+ */
+
+//------------------------------------------------------------------------
+// task 1: reduction of field access
+ 
+const char* KernelSource = "#define DIM " MAT_SIZE_STR
+                           "\n"
+                           "__kernel void mult(__global float *A,"
+                           "                   __global float *B,"
+                           "                   __global float *C) {"
+                           "   float tmp;"
+                           "   int i, j, k;"
+                           "   i = get_global_id(0);"
+                           "   for (j = 0; j < DIM; ++j) {"
+                           "       tmp = .0f;"
+                           "       for (k = 0; k < DIM; ++k) {"
+                           "            tmp += A[i*DIM+k] * B[k*DIM+j];"
+                           "            C[i*DIM+j] = tmp;"
+                           "       }"
+                           "   }"
+                           "}";
+ 
+
+
+
+//------------------------------------------------------------------------
+// task 2: Loop swapping
+/*
+const char* KernelSource = "#define DIM " MAT_SIZE_STR
+                           "\n"
+                           "__kernel void mult(__global float *A,"
+                           "                   __global float *B,"
+                           "                   __global float *C) {"
+                           "   float tmp = .0f;"
+                           "   int i, j, k;"
+                           "   j = get_global_id(0);"
+                           "   i = get_gloabl_id(1);"
+                           "   for (k = 0; k < DIM; ++k)"
+                           "         tmp += A[i*DIM+k] * B[k*DIM+j];"
+                           "   C[i*DIM+j] = tmp;"
+                           "}";
+
+ */
 
 /** **/
 int main(void) {
