@@ -54,7 +54,6 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "   }"
                            "}";
 
-
 #elif KERNEL == 2
 //------------------------------------------------------------------------
 // task 2: Loop swapping
@@ -75,7 +74,6 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "       C[i*DIM+j] = tmp;"
                            "   }"
                            "}";
-
 
 #elif KERNEL == 3
 //------------------------------------------------------------------------
@@ -103,10 +101,10 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "   }"
                            "}";
 
-
 #elif KERNEL == 4
- //------------------------------------------------------------------------
-// task 4: Distributed storage optimization in workgroups   COPIED from task 3 TODO
+//------------------------------------------------------------------------
+// task 4: Distributed storage optimization in workgroups
+// TODO (COPIED from task 3)
 
 const char* KernelName = "Distributed storage optimization in workgroups";
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
@@ -154,7 +152,7 @@ int main(void) {
     float** C = alloc_mat(MAT_SIZE, MAT_SIZE);
     float** C_serial = alloc_mat(MAT_SIZE, MAT_SIZE);
 
-    size_t global[1] = { MAT_SIZE };
+    size_t global[1] = {MAT_SIZE};
 
     double t_start_par = omp_get_wtime();
     /* 1) */
