@@ -152,7 +152,8 @@ Parallel took 0.16888 seconds.
 That's 53.46 times faster!
 ```
 
-TODO:  Discuss.
+Here we use the private memory into which the current line of `A`
+is written. This can then be accessed when calculating `C`. 
 
 
 # Task 4: Distributed Storage Optimization in Workgroups
@@ -193,4 +194,6 @@ Parallel took 0.41513 seconds.
 That's 21.24 times faster!
 ```
 
-TODO:  Discuss.
+By copying the relevant part of `B` into local memory, it can now
+be accessed when calculating` C`. We have explicitly defined the
+workgroup size in the `main`. 
