@@ -12,7 +12,13 @@
 #define DATA_SIZE MAT_SIZE* MAT_SIZE
 #define MEM_SIZE DATA_SIZE * sizeof(float)
 
+#ifndef KERNEL
+#define KERNEL 1
+#endif
 
+#if KERNEL == 0
+
+const char* KernelName = "Initial Version";
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "\n"
                            "__kernel void mult(__global float *A,"
@@ -20,55 +26,112 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "                   __global float *C) {"
                            "   int i, j, k;"
                            "   i = get_global_id(0);"
-                           "   for (j = 0; j < DIM; ++j)"
-                           "       for (k = 0; k < DIM; ++k)"
+                           "   for (j = 0; j < DIM; ++j) {"
+                           "       for (k = 0; k < DIM; ++k) {"
                            "           C[i*DIM+j] += A[i*DIM+k] * B[k*DIM+j];"
+                           "       }"
+                           "   }"
                            "}";
 
-
-
+#elif KERNEL == 1
 //------------------------------------------------------------------------
-// task 1: reduction of field access
-/* 
+// task 1: Reduction of field access
+
+const char* KernelName = "Reduction of field access";
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "\n"
                            "__kernel void mult(__global float *A,"
                            "                   __global float *B,"
                            "                   __global float *C) {"
-                           "   float tmp = .0f;"
                            "   int i, j, k;"
                            "   i = get_global_id(0);"
-                           "   for (j = 0; j < DIM; ++j)"
-                           "       for (k = 0; k < DIM; ++k)"
-                           "           tmp += A[i*DIM+k] * B[k*DIM+j];"
+                           "   for (j = 0; j < DIM; ++j) {"
+                           "       float tmp = .0f;"
+                           "       for (k = 0; k < DIM; ++k) {"
+                           "            tmp += A[i*DIM+k] * B[k*DIM+j];"
+                           "       }"
                            "       C[i*DIM+j] = tmp;"
+                           "   }"
                            "}";
- */
 
-
-
+#elif KERNEL == 2
 //------------------------------------------------------------------------
 // task 2: Loop swapping
-/*
+
+const char* KernelName = "Loop swapping";
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "\n"
                            "__kernel void mult(__global float *A,"
                            "                   __global float *B,"
                            "                   __global float *C) {"
-                           "   float tmp = .0f;"
                            "   int i, j, k;"
                            "   j = get_global_id(0);"
-                           "   i = get_gloabl_id(1);"
-                           "   for (k = 0; k < DIM; ++k)"
-                           "         tmp += A[i*DIM+k] * B[k*DIM+j];"
-                           "   C[i*DIM+j] = tmp;"
+                           "   for (i = 0; i < DIM; ++i) {"
+                           "       float tmp = .0f;"
+                           "       for (k = 0; k < DIM; ++k) {"
+                           "            tmp += A[i*DIM+k] * B[k*DIM+j];"
+                           "       }"
+                           "       C[i*DIM+j] = tmp;"
+                           "   }"
                            "}";
 
- */
+#elif KERNEL == 3
+//------------------------------------------------------------------------
+// task 3: Memory optimization
+// TODO: Shouldn't we also do the loop swapping of kernel 2 here?
 
+const char* KernelName = "Memory optimization";
+const char* KernelSource = "#define DIM " MAT_SIZE_STR
+                           "\n"
+                           "__kernel void mult(__global float *A,"
+                           "                   __global float *B,"
+                           "                   __global float *C) {"
+                           "   int i, j, k;"
+                           "   i = get_global_id(0);"
+                           "   float A1[DIM];"
+                           "   for (k = 0; k < DIM; ++k) {"
+                           "       A1[k] = A[i*DIM+k];"
+                           "   }"
+                           "   for (j = 0; j < DIM; ++j) {"
+                           "       float tmp = .0f;"
+                           "       for (k = 0; k < DIM; ++k) {"
+                           "           tmp += A1[k] * B[k*DIM+j];"
+                           "       }"
+                           "       C[i*DIM+j] = tmp;"
+                           "   }"
+                           "}";
 
+#elif KERNEL == 4
+//------------------------------------------------------------------------
+// task 4: Distributed storage optimization in workgroups
+// TODO (COPIED from task 3)
 
+const char* KernelName = "Distributed storage optimization in workgroups";
+const char* KernelSource = "#define DIM " MAT_SIZE_STR
+                           "\n"
+                           "__kernel void mult(__global float *A,"
+                           "                   __global float *B,"
+                           "                   __global float *C) {"
+                           "   int i, j, k;"
+                           "   i = get_global_id(0);"
+                           "   float A1[DIM];"
+                           "   for (k = 0; k < DIM; ++k) {"
+                           "       A1[k] = A[i*DIM+k];"
+                           "   }"
+                           "   for (j = 0; j < DIM; ++j) {"
+                           "       float tmp = .0f;"
+                           "       for (k = 0; k < DIM; ++k) {"
+                           "           tmp += A1[k] * B[k*DIM+j];"
+                           "       }"
+                           "       C[i*DIM+j] = tmp;"
+                           "   }"
+                           "}";
+#endif
+
+/** **/
 int main(void) {
+    printf("Running with kernel #%d (%s).\n", KERNEL, KernelName);
+
     cl_int err;
     cl_platform_id* platforms = NULL;
     char platform_name[1024];
@@ -89,7 +152,7 @@ int main(void) {
     float** C = alloc_mat(MAT_SIZE, MAT_SIZE);
     float** C_serial = alloc_mat(MAT_SIZE, MAT_SIZE);
 
-    size_t global[1] = {DATA_SIZE};
+    size_t global[1] = {MAT_SIZE};
 
     double t_start_par = omp_get_wtime();
     /* 1) */
@@ -163,13 +226,13 @@ int main(void) {
 
     /* 2) */
 
-    buf_A = clCreateBuffer(context, CL_MEM_WRITE_ONLY, MEM_SIZE, NULL, &err);
-    buf_B = clCreateBuffer(context, CL_MEM_WRITE_ONLY, MEM_SIZE, NULL, &err);
+    buf_A = clCreateBuffer(context, CL_MEM_READ_ONLY, MEM_SIZE, NULL, &err);
+    buf_B = clCreateBuffer(context, CL_MEM_READ_ONLY, MEM_SIZE, NULL, &err);
     output = clCreateBuffer(context, CL_MEM_WRITE_ONLY, MEM_SIZE, NULL, &err);
 
-    clEnqueueWriteBuffer(command_queue, buf_A, CL_TRUE, 0, MEM_SIZE, *A, 0,
+    clEnqueueWriteBuffer(command_queue, buf_A, CL_TRUE, 0, MEM_SIZE, A[0], 0,
                          NULL, NULL);
-    clEnqueueWriteBuffer(command_queue, buf_B, CL_TRUE, 0, MEM_SIZE, *B, 0,
+    clEnqueueWriteBuffer(command_queue, buf_B, CL_TRUE, 0, MEM_SIZE, B[0], 0,
                          NULL, NULL);
 
     clSetKernelArg(kernel, 0, sizeof(cl_mem), &buf_A);
@@ -183,7 +246,7 @@ int main(void) {
 
     clFinish(command_queue);
 
-    clEnqueueReadBuffer(command_queue, output, CL_TRUE, 0, MEM_SIZE, *C, 0,
+    clEnqueueReadBuffer(command_queue, output, CL_TRUE, 0, MEM_SIZE, C[0], 0,
                         NULL, NULL);
 
     /* 4) */
@@ -208,9 +271,6 @@ int main(void) {
     printf("Serial took %.5f seconds.\n", t_serial);
     printf("Parallel took %.5f seconds.\n", t_parallel);
     printf("That's %.2f times faster!\n", t_serial / t_parallel);
-
-    printf("Our results on a (3570K, GTX660, 2000x2000 matrices) were:\n");
-    printf("Serial: 58.36 seconds, Parallel: 0.689 seconds, Speedup : 84.69\n");
 
     return 0;
 }
