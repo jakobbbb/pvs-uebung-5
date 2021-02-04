@@ -17,7 +17,7 @@ where `id` ranges from `0` to `4`:
 | `1` | Reduction of Field Access | 12.39 |
 | `2` | Swapped Loops | 45.84 |
 | `3` | Memory Optimization | 53.46 |
-| `4` | More Memory Optimization | TODO |
+| `4` | More Memory Optimization | 21.24 |
 
 # Initial Kernel (0)
 
@@ -201,4 +201,6 @@ That's 21.24 times faster!
 
 By copying the relevant part of `B` into local memory, it can now
 be accessed when calculating` C`. We have explicitly defined the
-workgroup size in the `main`. 
+workgroup size in the `main`. The workgroup barrier function will
+ensure that all local memory accesses become visible to all
+work items in the workgroup. 
