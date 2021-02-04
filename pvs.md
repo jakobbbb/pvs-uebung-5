@@ -47,7 +47,7 @@ Turns out that this kernel does not produce correct results.  This may
 be caused by a race condition where write accesses to `C` collide
 because they are happening too quickly.
 
-
+\newpage
 # Task 1: Reduction of Field Access
 
 ```cpp
@@ -81,6 +81,7 @@ we're avoiding the race condition of kernel `0`.
 Furthermore, writing to a local variable like `tmp` is much faster than
 writing to a variable in global memory, like `C`.
 
+\newpage
 # Task 2: Loop Swapping
 
 
@@ -121,6 +122,7 @@ make more efficient use of its cache.
 The previous iteration of the kernel jumps around more while reading
 `A`, causing more cache misses which costs time.
 
+\newpage
 # Task 3: Memory Optimization
 
 ```cpp
@@ -161,6 +163,7 @@ Copying the row into a private memory only takes $n$ accesses to global
 memory.  After that, the relevant parts of `A` can be accessed more
 quickly.
 
+\newpage
 # Task 4: Distributed Storage Optimization in Workgroups
 
 ``` cpp
