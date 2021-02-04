@@ -155,6 +155,11 @@ That's 53.46 times faster!
 Here we use the private memory into which the current line of `A`
 is written. This can then be accessed when calculating `C`. 
 
+In each kernel, that row of `A` is accessed $n^2$ times, which takes
+quite long because global memory access is rather slow.
+Copying the row into a private memory only takes $n$ accesses to global
+memory.  After that, the relevant parts of `A` can be accessed more
+quickly.
 
 # Task 4: Distributed Storage Optimization in Workgroups
 
