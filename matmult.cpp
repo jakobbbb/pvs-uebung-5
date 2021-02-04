@@ -104,19 +104,19 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
 #elif KERNEL == 4
 //------------------------------------------------------------------------
 // task 4: Distributed storage optimization in workgroups
-// TODO (COPIED from task 3)
 
 const char* KernelName = "Distributed storage optimization in workgroups";
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "\n"
                            "__kernel void mult(__global float *A,"
                            "                   __global float *B,"
-                           "                   __global float *C) {"
-                           "   int i, j, k;"
+                           "                   __global float *C,"
+                           "                   __local float *B1) {"
+                           "   int i, j, k = get_global_id(0);"
                            "   int il = get_local_id(0);"
                            "   int sl = get_local_size(0);"
                            "   i = get_global_id(0);"
-                           "   float A1[DIM];"
+                           "   float A1[DIM]"
                            "   for (k = 0; k < DIM; ++k) {"
                            "       A1[k] = A[i*DIM+k];"
                            "   }"
@@ -124,6 +124,7 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "       for (k = il; k < DIM; k += sl) {"
                            "           B1[k] = B[k*DIM+j];"
                            "       }"
+                           "       barrier(CLK_LOCAL_MEM_FENCE);"
                            "       float tmp = .0f;"
                            "       for (k = 0; k < DIM; ++k) {"
                            "           tmp += A1[k] * B1[k];"
