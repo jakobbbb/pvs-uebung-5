@@ -116,7 +116,7 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
                            "   int il = get_local_id(0);"
                            "   int sl = get_local_size(0);"
                            "   i = get_global_id(0);"
-                           "   float A1[DIM]"
+                           "   float A1[DIM];"
                            "   for (k = 0; k < DIM; ++k) {"
                            "       A1[k] = A[i*DIM+k];"
                            "   }"
@@ -158,7 +158,9 @@ int main(void) {
     float** C = alloc_mat(MAT_SIZE, MAT_SIZE);
     float** C_serial = alloc_mat(MAT_SIZE, MAT_SIZE);
 
-    size_t global[1] = {MAT_SIZE};
+    size_t global[1] = {MAT_SIZE}, local[1];
+    clGetDeviceInfo(device_id, CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(size_t), local, NULL);
+    local[0] = ggt(global[0], local[0]);
 
     double t_start_par = omp_get_wtime();
     /* 1) */
@@ -244,10 +246,11 @@ int main(void) {
     clSetKernelArg(kernel, 0, sizeof(cl_mem), &buf_A);
     clSetKernelArg(kernel, 1, sizeof(cl_mem), &buf_B);
     clSetKernelArg(kernel, 2, sizeof(cl_mem), &output);
+    clSetKernelArg(kernel, 3, sizeof(float)*MAT_SIZE, NULL);
 
     /* 3)  */
 
-    clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, global, NULL, 0,
+    clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, global, local, 0,
                            NULL, NULL);
 
     clFinish(command_queue);

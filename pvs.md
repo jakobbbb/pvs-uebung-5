@@ -159,4 +159,13 @@ TODO:  Discuss.
 
 TODO:  Implement, add kernel here.
 
+```
+[user@computer pvs-uebung-5]$ make test KERNEL=4
+Running with kernel #4 (Distributed storage optimization in workgroups).
+Results are correct.
+Serial took 4.52292 seconds.
+Parallel took 0.21472 seconds.
+That's 21.06 times faster!
+```
+
 TODO:  Discuss.

@@ -93,4 +93,16 @@ void matmult_serial(float** A, float** B, float** C) {
     }
 }
 
+// ---------------------------------------------------------------------------
+// GGT 
+
+int ggt(int x, int y) {
+    int z;
+	while (y) {
+		z = x % y;
+		x = y;
+		y = z;
+	} return x;
+}
+
 #endif  // MATMULT_HPP
