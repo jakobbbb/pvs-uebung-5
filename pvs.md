@@ -157,7 +157,32 @@ TODO:  Discuss.
 
 # Task 4: Distributed Storage Optimization in Workgroups
 
-TODO:  Implement, add kernel here.
+``` cpp
+__kernel void mult(__global float *A,
+                   __global float *B,
+                   __global float *C,
+                   __local float *B1) {
+   int i, j, k = get_global_id(0);
+   int il = get_local_id(0);
+   int sl = get_local_size(0);
+   i = get_global_id(0);
+   float A1[DIM];
+   for (k = 0; k < DIM; ++k) {
+       A1[k] = A[i*DIM+k];
+   }
+   for (j = 0; j < DIM; ++j) {
+       for (k = il; k < DIM; k += sl) {
+           B1[k] = B[k*DIM+j];
+       }
+       barrier(CLK_LOCAL_MEM_FENCE);
+       float tmp = .0f;
+       for (k = 0; k < DIM; ++k) {
+           tmp += A1[k] * B1[k];
+   }
+   C[i*DIM+j] = tmp;
+   }
+}
+```
 
 ```
 [user@computer pvs-uebung-5]$ make test KERNEL=4

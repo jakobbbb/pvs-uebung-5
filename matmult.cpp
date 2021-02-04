@@ -78,7 +78,6 @@ const char* KernelSource = "#define DIM " MAT_SIZE_STR
 #elif KERNEL == 3
 //------------------------------------------------------------------------
 // task 3: Memory optimization
-// TODO: Shouldn't we also do the loop swapping of kernel 2 here?
 
 const char* KernelName = "Memory optimization";
 const char* KernelSource = "#define DIM " MAT_SIZE_STR
